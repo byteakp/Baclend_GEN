@@ -1,5 +1,3 @@
-# docker-compose.yml
----
 version: '3.8'
 
 services:
@@ -9,7 +7,8 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - PORT=3000
     volumes:
       - ./generated_projects:/app/generated_projects
       - ./uploads:/app/uploads
@@ -19,14 +18,26 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - backend-generator
-    restart: unless-stopped
+  # Optional: Add Redis for caching (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+
+  # Optional: Add MongoDB (uncomment if needed)
+  # mongodb:
+  #   image: mongo:7
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=admin
+  #     - MONGO_INITDB_ROOT_PASSWORD=password
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   restart: unless-stopped
+
+# volumes:
+#   mongodb_data:

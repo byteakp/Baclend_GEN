@@ -1,67 +1,87 @@
-# Backend Generator API
+# AI Backend Generator
 
-A powerful API that uses OpenRouter's free LLMs (Gemini 2.0 Flash & Devstral Small) to generate complete backend projects based on user prompts.
+A powerful AI-driven backend project generator that creates complete, production-ready backend applications using Groq's advanced language models.
 
 ## Features
 
-- 🤖 **AI-Powered Generation**: Uses Gemini 2.0 Flash and Devstral Small models
-- 📁 **Complete Project Structure**: Generates full file trees with actual code
-- 💾 **File Management**: Create, read, update, and enhance generated files
-- 📦 **Project Download**: Download generated projects as ZIP files
-- 🔧 **Code Enhancement**: Improve existing code with AI assistance
-- 💬 **Chat Interface**: Ask development questions to the AI
-- 🐳 **Docker Support**: Ready for containerized deployment
+🤖 **AI-Powered Generation**: Uses Groq's latest models (Llama 4 Scout, Llama 3.3 70B, Mixtral 8x7B)  
+📁 **Complete Project Structure**: Generates full backend projects with proper file organization  
+💾 **Live Code Editing**: Edit generated files directly through the API  
+🔄 **AI Enhancement**: Let AI improve or rewrite specific files  
+💬 **Interactive Chat**: Get development help with project context  
+📦 **Easy Download**: Download projects as ZIP files  
+🐳 **Docker Ready**: Containerized deployment support  
 
 ## Quick Start
 
-### Prerequisites
-- Node.js 16+
-- OpenRouter API key (free tier available)
+### 1. Installation
 
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd backend-generator-api
-```
+# Clone the repository
+git clone <your-repo-url>
+cd ai-backend-generator
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Create environment file:
-```bash
+# Copy environment template
 cp .env.example .env
-# Edit .env and add your OPENROUTER_API_KEY
 ```
 
-4. Start the server:
+### 2. Configuration
+
+Edit `.env` file:
 ```bash
+GROQ_API_KEY=your_groq_api_key_here
+PORT=3000
+NODE_ENV=development
+```
+
+Get your Groq API key from: https://console.groq.com/
+
+### 3. Start the Server
+
+```bash
+# Development mode
 npm run dev
+
+# Production mode
+npm start
+```
+
+### 4. Using Docker
+
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+
+# Or run with Docker directly
+docker build -t backend-generator .
+docker run -p 3000:3000 -e GROQ_API_KEY=your_key backend-generator
 ```
 
 ## API Endpoints
 
-### Core Endpoints
-
-- `GET /health` - Health check
-- `GET /api/models` - Available AI models
-- `POST /api/generate` - Generate backend project
+### Project Generation
+- `POST /api/generate` - Generate a new backend project
 - `GET /api/download/:projectId` - Download project as ZIP
 - `GET /api/projects` - List all generated projects
-
-### Project Management
-
 - `GET /api/project/:projectId` - Get project details
-- `GET /api/project/:projectId/file/*` - Get file content
-- `PUT /api/project/:projectId/enhance/*` - Enhance file with AI
 - `DELETE /api/project/:projectId` - Delete project
 
-### AI Chat
+### File Management
+- `GET /api/project/:projectId/file/*` - Get file content
+- `PUT /api/project/:projectId/file/*` - Update file content
+- `PUT /api/project/:projectId/enhance/*` - AI enhance file
+- `PUT /api/project/:projectId/rewrite/*` - AI rewrite file
 
-- `POST /api/chat` - Chat with AI for development questions
+### AI Chat
+- `POST /api/chat` - Chat with AI assistant
+- `POST /api/chat/stream` - Stream chat responses
+
+### System
+- `GET /health` - Health check
+- `GET /api/models` - Available AI models
 
 ## Usage Examples
 
@@ -71,8 +91,19 @@ npm run dev
 curl -X POST http://localhost:3000/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "Create a REST API for a blog platform with user authentication, posts, comments, and categories using Node.js and MongoDB",
-    "model": "gemini-2.0-flash"
+    "prompt": "Create a REST API for a task management app with user authentication, CRUD operations for tasks, and MongoDB integration",
+    "model": "llama-4-scout"
+  }'
+```
+
+### Enhance a File
+
+```bash
+curl -X PUT http://localhost:3000/api/project/{projectId}/enhance/src/routes/tasks.js \
+  -H "Content-Type: application/json" \
+  -d '{
+    "requirements": "Add input validation and error handling",
+    "model": "llama-4-scout"
   }'
 ```
 
@@ -82,87 +113,147 @@ curl -X POST http://localhost:3000/api/generate \
 curl -X POST http://localhost:3000/api/chat \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "How do I implement JWT authentication in Express.js?",
-    "model": "devstral-small"
+    "message": "How do I add JWT authentication to my Express app?",
+    "model": "llama-4-scout",
+    "projectId": "optional-project-id-for-context"
   }'
 ```
 
 ## Available AI Models
 
-- **gemini-2.0-flash**: Google's Gemini 2.0 Flash (fast, high-quality)
-- **devstral-small**: Mistral's Devstral Small (specialized for coding)
+- **llama-4-scout**: Meta's latest Llama 4 Scout (17B parameters) - Best for code generation
+- **llama-3.3-70b**: Llama 3.3 70B - Most capable for complex tasks
+- **mixtral-8x7b**: Mixtral 8x7B - Good balance of speed and quality
+- **gemma2-9b**: Google's Gemma 2 9B - Fast and efficient
 
-## Docker Deployment
+## Generated Project Structure
 
-### Build and run with Docker:
+The AI generates complete backend projects with:
 
+```
+project-name/
+├── src/
+│   ├── controllers/     # Route controllers
+│   ├── models/         # Database models
+│   ├── routes/         # API routes
+│   ├── middleware/     # Custom middleware
+│   ├── utils/          # Utility functions
+│   ├── config/         # Configuration files
+│   └── app.js          # Main application file
+├── tests/              # Test files
+├── package.json        # Dependencies
+├── README.md          # Project documentation
+├── .env.example       # Environment template
+└── Dockerfile         # Docker configuration
+```
+
+## Features Included in Generated Projects
+
+✅ **Complete CRUD Operations**  
+✅ **Database Integration** (MongoDB, PostgreSQL, etc.)  
+✅ **Authentication & Authorization**  
+✅ **Input Validation**  
+✅ **Error Handling**  
+✅ **API Documentation**  
+✅ **Docker Support**  
+✅ **Testing Setup**  
+✅ **Security Middleware**  
+✅ **Environment Configuration**  
+
+## Development
+
+### Run Tests
 ```bash
-docker build -t backend-generator-api .
-docker run -p 3000:3000 -e OPENROUTER_API_KEY=your_key backend-generator-api
+npm test
+npm run test:watch
 ```
 
-### Using Docker Compose:
-
+### Linting
 ```bash
-docker-compose up -d
+npm run lint
+npm run lint:fix
 ```
 
-## Project Structure
-
+### Project Structure
 ```
-backend-generator-api/
-├── server.js              # Main application file
-├── package.json           # Dependencies and scripts
+ai-backend-generator/
+├── server.js              # Main server file
+├── package.json           # Dependencies
+├── .env.example          # Environment template
 ├── Dockerfile            # Docker configuration
-├── docker-compose.yml    # Multi-container setup
-├── nginx.conf           # Nginx reverse proxy config
-├── .env.example         # Environment variables template
-├── generated_projects/  # Generated projects directory
-└── uploads/            # Temporary uploads directory
+├── docker-compose.yml    # Docker Compose setup
+├── generated_projects/   # Generated projects storage
+├── uploads/             # Temporary uploads
+└── README.md            # This file
 ```
 
 ## Environment Variables
 
-- `OPENROUTER_API_KEY`: Your OpenRouter API key (required)
-- `NODE_ENV`: Environment (development/production)
-- `PORT`: Server port (default: 3000)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `GROQ_API_KEY` | Groq API key (required) | - |
+| `PORT` | Server port | 3000 |
+| `NODE_ENV` | Environment mode | development |
 
-## Development
+## Error Handling
 
-```bash
-# Install dependencies
-npm install
+The API includes comprehensive error handling:
 
-# Start development server with auto-reload
-npm run dev
+- **400 Bad Request**: Invalid input parameters
+- **404 Not Found**: Project or file not found
+- **500 Internal Server Error**: AI generation or server errors
 
-# Run tests
-npm test
-
-# Build Docker image
-npm run docker:build
-
-# Run Docker container
-npm run docker:run
-```
-
-## API Response Format
-
-### Successful Generation Response:
+All errors return JSON with descriptive messages:
 ```json
 {
-  "success": true,
-  "projectId": "uuid-here",
-  "projectName": "project-name",
-  "description": "Project description",
-  "technology": "Node.js/Express",
-  "fileTree": ["file1.js", "file2.js", "..."],
-  "dependencies": {...},
-  "setupInstructions": [...],
-  "apiEndpoints": [...],
-  "downloadUrl": "/api/download/uuid-here"
+  "error": "Error description",
+  "message": "Detailed error message"
 }
 ```
+
+## Rate Limiting
+
+Consider implementing rate limiting for production:
+
+```javascript
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+app.use('/api/', limiter);
+```
+
+## Security Considerations
+
+- Always validate API keys
+- Implement input sanitization
+- Use HTTPS in production
+- Consider file upload limits
+- Monitor generated project content
+- Implement user authentication for multi-user setups
+
+## Deployment
+
+### Heroku
+```bash
+heroku create your-app-name
+heroku config:set GROQ_API_KEY=your_key
+git push heroku main
+```
+
+### Railway
+```bash
+railway login
+railway new
+railway add
+railway deploy
+```
+
+### DigitalOcean App Platform
+Use the included `Dockerfile` for container-based deployment.
 
 ## Contributing
 
@@ -178,6 +269,10 @@ MIT License - see LICENSE file for details.
 
 ## Support
 
-For issues and questions:
-- Create an issue on GitHub
-- Check OpenRouter documentation for API-related questions
+- 📧 Email: your-email@example.com
+- 💬 Discord: [Your Discord]
+- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/ai-backend-generator/issues)
+
+---
+
+**Made with ❤️ and AI**
